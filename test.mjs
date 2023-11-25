@@ -1,9 +1,9 @@
-import { getLoginToken, storeLogins, getStoredLogins} from './stfclogin.mjs';
+import { getLoginToken} from './stfclogin.mjs';
+import { getStoredLogins, storeLogins } from './stfctokens.mjs';
 import dotenv from 'dotenv'
 dotenv.config()
 
 var logins = JSON.parse(process.env.STFC_LOGINS);
-var tokens = [];
 var promises = [];
 for(var i in logins) {
     var login = logins[i];

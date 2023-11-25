@@ -2,7 +2,7 @@
 import express from 'express';
 import dotenv from 'dotenv'
 
-import { getTokens, getStoredLogins, needNewTokens} from './stfclogin.mjs';
+import { getStoredLogins, needNewTokens} from './stfctokens.mjs';
 import makeApiRequest from "./stfcapi.mjs";
 dotenv.config()
 
@@ -58,12 +58,11 @@ app.get('/claimall', async (req,res) => {
     tokens = await getStoredLogins();
     if(needNewTokens(tokens)) {
       console.log("NEED new tokens")
-      tokens = await getTokens(JSON.parse(process.env.STFC_LOGINS));
+      // tokens = await getTokens(JSON.parse(process.env.STFC_LOGINS));
     }
   } catch(e) {
     console.log("Error getting tokens: "+e);
-    var logins = JSON.parse(process.env.STFC_LOGINS);
-    tokens = await getTokens(logins);
+    // tokens = await getTokens(logins);
   }
   var url = "https://storeapi.startrekfleetcommand.com/api/v2/offers/gifts";
   try {
