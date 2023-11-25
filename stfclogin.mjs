@@ -1,5 +1,5 @@
 import puppeteer from 'puppeteer';
-import { storeLogins } from './storeLogins.mjs';
+import { storeLogins } from './stfctokens.mjs';
 
 const storeUrl = 'https://home.startrekfleetcommand.com/store';
 
