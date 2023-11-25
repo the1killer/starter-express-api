@@ -56,6 +56,10 @@ app.get('/claimall', async (req,res) => {
   var tokens = [];
   try{
     tokens = await getStoredLogins();
+    if(needNewTokens(tokens)) {
+      console.log("NEED new tokens")
+      tokens = await getTokens(JSON.parse(process.env.STFC_LOGINS));
+    }
   } catch(e) {
     console.log("Error getting tokens: "+e);
     var logins = JSON.parse(process.env.STFC_LOGINS);

@@ -120,6 +120,7 @@ const needNewTokens = (tokens) => {
     for(var i in tokens) {
         var token = tokens[i];
         const claims = jose.decodeJwt(token)
+        console.log("Token "+i+" issued at: "+claims.iat+" vs ("+Date.now()/1000+")",Date.now()/1000-claims.iat);
         if(Date.now()/1000-claims.iat > 86400) {
             needNew = true;
             break;
