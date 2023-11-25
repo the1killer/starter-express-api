@@ -1,26 +1,53 @@
 import puppeteer from 'puppeteer';
+import AWS from 'aws-sdk';
+import * as jose from 'jose';
+
+import { encrypt, decrypt } from './stfccrypto.mjs';
+const s3 = new AWS.S3()
 
 const storeUrl = 'https://home.startrekfleetcommand.com/store';
 
+const getTokens = async (logins) => {
+    return new Promise(async(resolve, reject) => {
+        var promises = [];
+        for(var i in logins) {
+            var login = logins[i];
+            promises.push(getLoginToken(login.email,login.password));
+        }
+        await Promise.all(promises).then(async(values) => {
+            console.log("Got Tokens: \r\n"+JSON.stringify(values));
+            await storeLogins(values);
+            resolve(values);
+        });
+    });
+}
+
 const getLoginToken = async (email,pass) => {
     return new Promise(async(resolve, reject) => {
-        // const browser = await puppeteer.launch({ headless: "new"});
-        const browser = await puppeteer.launch({ headless: false});
+        const browser = await puppeteer.launch({ headless: "new"});
+        // const browser = await puppeteer.launch({ headless: false});
         const page = await browser.newPage();
 
         // console.log("Logging in with email: "+email+" and password: "+pass);
 
         await page.setRequestInterception(true);
-        page.on('request', (request) => {
+        page.on('request', async(request) => {
             if(request.url().includes("https://storeapi.startrekfleetcommand.com/api/v2/offers/gifts") && request.method() == "GET") {
                 console.log(request.url())
-                console.log(request.headers())
+                // console.log(request.headers())
                 if(request.headers().authorization != undefined) {
                     var headers = request.headers();
-                    resolve(headers.authorization.replace("Bearer ",""));
-                    console.log("Got token: "+headers.authorization.replace("Bearer ",""));
+                    // console.log("Got token: "+headers.authorization.replace("Bearer ",""));
+
+                    console.log("Clearing cache and cookies");
+                    const client = await page.target().createCDPSession();
+                    await client.send('Network.clearBrowserCookies');
+                    await client.send('Network.clearBrowserCache');
+
                     console.log("Closing browser");
                     browser.close();
+
+                    resolve(headers.authorization.replace("Bearer ",""));
                 }
             }
             request.continue();
@@ -59,4 +86,45 @@ const getLoginToken = async (email,pass) => {
     });
 };
 
-export default getLoginToken;
+const storeLogins = async(data) => {
+    var bucket = process.env.STFC_S3_BUCKET;
+    var file = process.env.STFC_CREDENTIAL_FILE;
+    var encrypted = [];
+    for(var i in data) {
+        encrypted[i] = encrypt(data[i]);
+    }
+    await s3.putObject({
+        Body: JSON.stringify(encrypted),
+        Bucket: bucket,
+        Key: file,
+    }).promise()
+}
+
+const getStoredLogins = async() => {
+    var bucket = process.env.STFC_S3_BUCKET;
+    var file = process.env.STFC_CREDENTIAL_FILE;
+    let my_file = await s3.getObject({
+        Bucket: bucket,
+        Key: file,
+    }).promise()
+    var encrypted = JSON.parse(my_file.Body.toString());
+    var decrypted = [];
+    for(var i in encrypted) {
+        decrypted[i] = decrypt(encrypted[i]);
+    }
+    return decrypted;
+}
+
+const needNewTokens = (tokens) => {
+    var needNew = false;
+    for(var i in tokens) {
+        var token = tokens[i];
+        const claims = jose.decodeJwt(token)
+        if(Date.now()/1000-claims.iat > 86400) {
+            needNew = true;
+            break;
+        }
+    }
+    return needNew;
+}
+export { getTokens, getLoginToken, storeLogins, getStoredLogins , needNewTokens};

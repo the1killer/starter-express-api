@@ -1,24 +1,33 @@
 // import * as express from "express";
 import express from 'express';
-import makeApiRequest from "./stfcapi.mjs";
 import dotenv from 'dotenv'
+
+import { getTokens, getStoredLogins, needNewTokens} from './stfclogin.mjs';
+import makeApiRequest from "./stfcapi.mjs";
 dotenv.config()
 
 const app = express()
 
-var tokens = JSON.parse(process.env.TOKENS);
+// var tokens = JSON.parse(process.env.TOKENS);
 
 app.all('/', (req, res) => {
     console.log("Just got a request!")
     res.send('Yo!')
 })
-app.all('/token', (req, res) => {
+app.all('/token', async (req, res) => {
   console.log("Just got a token request!")
+  var tokens = await getStoredLogins();
   console.log("token: ("+typeof(tokens)+") "+JSON.stringify(tokens))
-  res.send('Yo ho!\n'+tokens.length)
+  if(needNewTokens(tokens)) {
+    console.log("NEED new tokens")
+    res.send('You stinky!\n'+tokens.length)
+  } else {
+    res.send('Yo ho!\n'+tokens.length)
+  }
 })
 app.get('/gifts', async (req,res) => {
     console.log("Just got a /gifts request!")
+    var tokens = await getStoredLogins();
     var url = "https://storeapi.startrekfleetcommand.com/api/v2/offers/gifts";
     try {
         var toClaim = [];
@@ -44,6 +53,14 @@ app.get('/gifts', async (req,res) => {
 })
 app.get('/claimall', async (req,res) => {
   console.log("Just got a /claimall request!")
+  var tokens = [];
+  try{
+    tokens = await getStoredLogins();
+  } catch(e) {
+    console.log("Error getting tokens: "+e);
+    var logins = JSON.parse(process.env.STFC_LOGINS);
+    tokens = await getTokens(logins);
+  }
   var url = "https://storeapi.startrekfleetcommand.com/api/v2/offers/gifts";
   try {
       var results = [];
