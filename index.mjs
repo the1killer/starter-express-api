@@ -2,7 +2,7 @@
 import express from 'express';
 import dotenv from 'dotenv'
 
-import { getStoredLogins, needNewTokens} from './stfctokens.mjs';
+import { getStoredLogins, needNewTokens, getTaskTokens} from './stfctokens.mjs';
 import makeApiRequest from "./stfcapi.mjs";
 dotenv.config()
 
@@ -105,4 +105,9 @@ app.get('/claimall', async (req,res) => {
       res.sendStatus(500);
     }
 })
+
+app.get('/tasktoken', async (req,res) => {
+  console.log("Just got a /tasktoken request!")
+  res.json(await getTaskTokens());
+});
 app.listen(process.env.PORT || 3000)

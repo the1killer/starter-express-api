@@ -48,4 +48,16 @@ const needNewTokens = (tokens) => {
     return needNew;
 }
 
-export { storeLogins, getStoredLogins , needNewTokens };
+const getTaskTokens = async() => {
+    var toParse = JSON.parse(process.env.TASK_TOKENS);
+    var tokens = {};
+    for(var i in toParse) {
+        var token = toParse[i];
+        console.log(token);
+        // tokens[token[0]+token.substr(-2)+i.toString()]=(process.env[token]);
+        tokens[token]=process.env[token];
+    }
+    return encrypt(JSON.stringify(tokens));
+}
+
+export { storeLogins, getStoredLogins , needNewTokens, getTaskTokens };
