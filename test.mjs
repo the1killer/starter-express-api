@@ -1,7 +1,16 @@
-import { getLoginToken} from './stfclogin.mjs';
+import { getLoginToken, fetchTaskTokens} from './stfclogin.mjs';
 import { getStoredLogins, storeLogins } from './stfctokens.mjs';
+import { decrypt } from './stfccrypto.mjs';
+
 import dotenv from 'dotenv'
 dotenv.config()
+
+// var taskTokens = JSON.parse(decrypt(await fetchTaskTokens()));
+// Object.keys(taskTokens).forEach(function(key) {
+//     process.env[key] = taskTokens[key];
+// });
+
+console.log("\n\nDate: "+Date());
 
 var logins = JSON.parse(process.env.STFC_LOGINS);
 var promises = [];

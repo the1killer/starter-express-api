@@ -1,32 +1,24 @@
-import AWS from 'aws-sdk';
 import * as jose from 'jose';
+import { writeFileSync, readFileSync } from 'fs';
 
 
 import { encrypt, decrypt } from './stfccrypto.mjs';
-const s3 = new AWS.S3()
 
 const storeLogins = async(data) => {
-    var bucket = process.env.STFC_S3_BUCKET;
     var file = process.env.STFC_CREDENTIAL_FILE;
     var encrypted = [];
     for(var i in data) {
         encrypted[i] = encrypt(data[i]);
     }
-    await s3.putObject({
-        Body: JSON.stringify(encrypted),
-        Bucket: bucket,
-        Key: file,
-    }).promise()
+
+    //write to json file
+    writeFileSync(file, JSON.stringify(encrypted));
 }
 
 const getStoredLogins = async() => {
-    var bucket = process.env.STFC_S3_BUCKET;
     var file = process.env.STFC_CREDENTIAL_FILE;
-    let my_file = await s3.getObject({
-        Bucket: bucket,
-        Key: file,
-    }).promise()
-    var encrypted = JSON.parse(my_file.Body.toString());
+    let my_file = readFileSync(file);
+    var encrypted = JSON.parse(my_file);
     var decrypted = [];
     for(var i in encrypted) {
         decrypted[i] = decrypt(encrypted[i]);
