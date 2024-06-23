@@ -76,7 +76,7 @@ const getLoginToken = async (email,pass) => {
                 document.querySelector('input[type="submit"]').click();
             });
         })
-        await page.waitForSelector('button[id="store-web-gift-tab-button"]').then(() => {
+        await page.waitForSelector('a[id="navigation-item-to-store"]').then(() => {
             // page.$('button[id="store-web-gift-tab-button"]').click();
             // console.log("Clicked on Gift tab");
         })
