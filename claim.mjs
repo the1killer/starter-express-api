@@ -31,7 +31,11 @@ try {
         // console.log('Data: ',data);
         toClaim = []
         data.forEach(ele => {
-            if(ele.offer_details.valid_from == undefined && ele.title.includes("Loyalty Chest") == false) {
+            if(ele.offer_details.valid_from == undefined 
+                && ele.title.includes("Loyalty Chest") == false 
+                && ele.title.includes("Avatar Exchange") == false
+                && ele.title.includes("Rush") == false
+            ) {
             toClaim.push({id:ele.bundle_id,name:ele.title});
             }
         });

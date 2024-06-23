@@ -25,3 +25,4 @@ await Promise.all(promises).then(async(values) => {
         console.log("Got Stored Logins: \r\n"+JSON.stringify(logins));
     });
 });
+console.log("DONE\n");

@@ -1,9 +1,9 @@
-if not "%minimized%"=="" goto :minimized
-set minimized=true
+@REM if not "%minimized%"=="" goto :minimized
+@REM set minimized=true
 @echo off
-cd "G:\Users\Captnwalker1\Downloads\github\starter-express-api\"
+cd "C:\Users\YOURUSER\Downloads\github\starter-express-api\"
 G:
-node test.mjs >> test.log
+node test.mjs >> test.log 2>>&1
 
-goto :EOF
-:minimized
+@REM goto :EOF
+@REM :minimized
