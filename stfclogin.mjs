@@ -66,14 +66,14 @@ const getLoginToken = async (email,pass) => {
                 document.querySelector('button[data-test-id="site-email-input-submit-button"]').click();
             });
         });
-        await page.waitForSelector('input[name="credentials.passcode"]').then(async() => {
+        await page.waitForSelector('input[data-test-id="InputPassword"]').then(async() => {
             // console.log("Filling in password");
             page.type('input[type="password"]', pass);
             
             await page.waitForTimeout(1000);
             // console.log("Clicking submit login button");
             await page.evaluate(() => {
-                document.querySelector('input[type="submit"]').click();
+                document.querySelector('span.submitButton').parentElement.click();
             });
         })
         await page.waitForSelector('a[id="navigation-item-to-store"]').then(() => {
