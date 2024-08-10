@@ -16,9 +16,11 @@ const storeLogins = async(data) => {
 }
 
 const getStoredLogins = async() => {
-    var file = process.env.STFC_CREDENTIAL_FILE;
-    let my_file = readFileSync(file);
-    var encrypted = JSON.parse(my_file);
+    // var file = process.env.STFC_CREDENTIAL_FILE;
+    // let my_file = readFileSync(file);
+    // var encrypted = JSON.parse(my_file);
+    var encrypted = JSON.parse(process.env.TOKENS);
+    console.log(encrypted);
     var decrypted = [];
     for(var i in encrypted) {
         decrypted[i] = decrypt(encrypted[i]);

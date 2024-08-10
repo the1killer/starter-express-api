@@ -1,0 +1,37 @@
+# "service" is the name of this project. This will also be added to your AWS resource names.
+service: stfc-claim
+
+frameworkVersion: "3"
+
+useDotenv: true
+
+provider:
+  name: aws
+  runtime: nodejs20.x
+
+functions:
+  api:
+    handler: index.handler
+    events:
+      - httpApi: "*"
+    environment:
+      TOKENS: "${env:TOKENS}"
+      STFC_CRYPTO_KEY: "${env:STFC_CRYPTO_KEY}"
+
+package: 
+  exclude:
+    - node_modules/aws-sdk/**
+    - node_modules/puppeteer-core/**
+    - node_modules/chromium-bidi/**
+    - .gitignore
+    - .git/**
+    - claim.bat
+    - claim.log
+    - claim.mjs
+    - test.bat
+    - test.log
+    - test.mjs
+    - README.md
+    - example.env
+    - .env
+    - serverless.yml

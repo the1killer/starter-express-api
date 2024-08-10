@@ -1,6 +1,7 @@
 // import * as express from "express";
 import express from 'express';
 import dotenv from 'dotenv'
+import serverless from 'serverless-http';
 
 import { getStoredLogins, needNewTokens, getTaskTokens} from './stfctokens.mjs';
 import makeApiRequest from "./stfcapi.mjs";
@@ -40,9 +41,9 @@ app.get('/gifts', async (req,res) => {
           // console.log('Data: ',data);
           toClaim[i] = []
           data.forEach(ele => {
-            if(ele.offer_details.valid_from == undefined && ele.title.includes("Loyalty Chest") == false) {
+            // if(ele.offer_details.valid_from == undefined && ele.title.includes("Loyalty Chest") == false) {
               toClaim[i].push({id:ele.bundle_id,name:ele.title});
-            }
+            // }
           });
         }
         
@@ -78,11 +79,14 @@ app.get('/claimall', async (req,res) => {
         // console.log('Data: ',data);
         toClaim = []
         data.forEach(ele => {
-          if(ele.offer_details.valid_from == undefined && ele.title.includes("Loyalty Chest") == false) {
+            if(ele.offer_details.valid_from == undefined 
+                && ele.title.includes("Loyalty Chest") == false 
+                && ele.title.includes("Avatar Exchange") == false
+                && ele.title.includes("Rush") == false
+            ) {
             toClaim.push({id:ele.bundle_id,name:ele.title});
-          }
+            }
         });
-
         if(toClaim.length == 0) {
           results[i].push("No gifts available to claim");
           continue;
@@ -110,4 +114,6 @@ app.get('/tasktoken', async (req,res) => {
   console.log("Just got a /tasktoken request!")
   res.json(await getTaskTokens());
 });
-app.listen(process.env.PORT || 3000)
+// app.listen(process.env.PORT || 3000)
+
+export const handler = serverless(app);
