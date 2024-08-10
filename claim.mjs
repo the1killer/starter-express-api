@@ -35,6 +35,7 @@ try {
                 && ele.title.includes("Loyalty Chest") == false 
                 && ele.title.includes("Avatar Exchange") == false
                 && ele.title.includes("Rush") == false
+                && ele.title.includes("Welding Hardware") == false
             ) {
             toClaim.push({id:ele.bundle_id,name:ele.title});
             }
