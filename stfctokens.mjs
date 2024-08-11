@@ -42,6 +42,7 @@ const needNewTokens = (tokens) => {
     return needNew;
 }
 
+//deprecated, was only on cyclic
 const getTaskTokens = async() => {
     var toParse = JSON.parse(process.env.TASK_TOKENS);
     var tokens = {};

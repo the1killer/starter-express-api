@@ -4,6 +4,7 @@ import dotenv from 'dotenv'
 import serverless from 'serverless-http';
 
 import { getStoredLogins, needNewTokens, getTaskTokens} from './stfctokens.mjs';
+import { getTokens, updateTokens } from './stfcaws.mjs';
 import makeApiRequest from "./stfcapi.mjs";
 dotenv.config()
 
@@ -17,7 +18,7 @@ app.all('/', (req, res) => {
 })
 app.all('/token', async (req, res) => {
   console.log("Just got a token request!")
-  var tokens = await getStoredLogins();
+  var tokens = await getTokens();
   console.log("token: ("+typeof(tokens)+") "+JSON.stringify(tokens))
   if(needNewTokens(tokens)) {
     console.log("NEED new tokens")
@@ -28,7 +29,7 @@ app.all('/token', async (req, res) => {
 })
 app.get('/gifts', async (req,res) => {
     console.log("Just got a /gifts request!")
-    var tokens = await getStoredLogins();
+    var tokens = await getTokens();
     var url = "https://storeapi.startrekfleetcommand.com/api/v2/offers/gifts";
     try {
         var toClaim = [];
@@ -56,7 +57,7 @@ app.get('/claimall', async (req,res) => {
   console.log("Just got a /claimall request!")
   var tokens = [];
   try{
-    tokens = await getStoredLogins();
+    tokens = await getTokens();
     if(needNewTokens(tokens)) {
       console.log("NEED new tokens")
       // tokens = await getTokens(JSON.parse(process.env.STFC_LOGINS));
@@ -110,10 +111,6 @@ app.get('/claimall', async (req,res) => {
     }
 })
 
-app.get('/tasktoken', async (req,res) => {
-  console.log("Just got a /tasktoken request!")
-  res.json(await getTaskTokens());
-});
 // app.listen(process.env.PORT || 3000)
 
 export const handler = serverless(app);

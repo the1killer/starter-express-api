@@ -8,6 +8,20 @@ useDotenv: true
 provider:
   name: aws
   runtime: nodejs20.x
+  iam:
+    role:
+      statements:
+        - Effect: Allow
+          Action:
+            - dynamodb:DescribeTable
+            - dynamodb:Query
+            - dynamodb:Scan
+            - dynamodb:GetItem
+            - dynamodb:PutItem
+            - dynamodb:UpdateItem
+            - dynamodb:DeleteItem
+          Resource:
+            - "Fn::GetAtt": [tokensTable, Arn]
 
 functions:
   api:
@@ -15,8 +29,25 @@ functions:
     events:
       - httpApi: "*"
     environment:
-      TOKENS: "${env:TOKENS}"
       STFC_CRYPTO_KEY: "${env:STFC_CRYPTO_KEY}"
+      DYNAMODB_TABLE:
+        Ref: tokensTable
+
+resources: # CloudFormation template syntax from here on.
+  Resources:
+    tokensTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: tokensTable
+        AttributeDefinitions:
+          - AttributeName: myKey
+            AttributeType: S
+        KeySchema:
+          - AttributeName: myKey
+            KeyType: HASH
+        ProvisionedThroughput:
+          ReadCapacityUnits: 1
+          WriteCapacityUnits: 1
 
 package: 
   exclude:
@@ -35,3 +66,4 @@ package:
     - example.env
     - .env
     - serverless.yml
+    - awsenvupdate.mjs
