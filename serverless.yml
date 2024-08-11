@@ -32,6 +32,12 @@ functions:
       STFC_CRYPTO_KEY: "${env:STFC_CRYPTO_KEY}"
       DYNAMODB_TABLE:
         Ref: tokensTable
+  cron:
+    handler: cron.handler
+    events:
+      - schedule: cron(10 * * * ? *)
+    environment:
+      CRON_URL: "${env:CRON_URL}"
 
 resources: # CloudFormation template syntax from here on.
   Resources:

@@ -2,6 +2,7 @@
 import express from 'express';
 import dotenv from 'dotenv'
 import serverless from 'serverless-http';
+import { inspect } from 'util'
 
 import { getStoredLogins, needNewTokens, getTaskTokens} from './stfctokens.mjs';
 import { getTokens, updateTokens } from './stfcaws.mjs';
@@ -14,6 +15,7 @@ const app = express()
 
 app.all('/', (req, res) => {
     console.log("Just got a request!")
+    // console.log(inspect(req));
     res.send('Yo!')
 })
 app.all('/token', async (req, res) => {
