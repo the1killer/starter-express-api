@@ -4,3 +4,4 @@ credentials.json
 test.log
 claim.log
 .serverless
+awsenvupdate.log
